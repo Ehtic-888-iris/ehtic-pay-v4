@@ -1,85 +1,187 @@
-### 1. index.html
-
-
-
-
-ETHIC PAY v4
-
-
-
-
-💰 ETHIC PAY v4
-
-
-ระบบจ่ายเงินอัจฉริยะ
-
-
-คลิกที่นี่
-
-
-
-
-
-
----
-
-### 2. style.css
-body {
-font-family: 'Sarabun', sans-serif;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-height: 100vh;
-display: flex;
-justify-content: center;
-align-items: center;
-margin: 0;
-color: white;
-}
-
-.container {
-text-align: center;
-background: rgba(255, 255, 255, 0.1);
-padding: 40px;
-border-radius: 20px;
-backdrop-filter: blur(10px);
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-font-size: 2.5rem;
-margin-bottom: 10px;
-}
-
-button {
-background: white;
-color: #764ba2;
-border: none;
-padding: 12px 30px;
-font-size: 1.2rem;
-border-radius: 50px;
-cursor: pointer;
-transition: transform 0.2s;
-margin-top: 20px;
-}
-
-button:hover {
-transform: scale(1.05);
-}
-
-#output {
-margin-top: 20px;
-font-size: 1.2rem;
-}
----
-
-### 3. app.js
-function showMessage() {
-const output = document.getElementById('output');
-output.textContent = '🎉 ยินดีต้อนรับสู่ ETHIC PAY v4!';
-output.style.color = '#FFD700';
-}
----
-
-### 4. README.md (ถ้าต้องการ)
-# ETHIC PAY v4
-ระบบจ่ายเงินอัจฉริยะ
----
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETHIC PAY - QR Payment</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border-radius: 20px;
+            border: 1px solid #ffd700;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+ๅ        .qr-image {
+            width: 300px;
+            height: 300px;
+            background: white;
+            padding: 20px;
+border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .qr-image img {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .payment-details {
+            color: #ffd700;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .payment-details .amount {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        
+        .payment-details .currency {
+            font-size: 1.2em;
+        }
+        
+        .timer {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .method-btn {
+            padding: 10px 20px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .method-btn:hover,
+        .method-btn.active {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .scan-instruction {
+            color: #888;
+            font-size: 0.9em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>💰 ETHIC PAY</h1>
+                <span class="subtitle">QR Payment Gateway</span>
+            </div>
+        </header>
+        
+        <div class="qr-container">
+            <h2 style="color: #ffd700;">Scan to Pay</h2>
+            
+            <div class="payment-methods">
+                <button class="method-btn active" onclick="switchMethod('promptpay')">🇹🇭 PromptPay</button>
+                <button class="method-btn" onclick="switchMethod('usdt')">🪙 USDT</button>
+                <button class="method-btn" onclick="switchMethod('btc')">₿ BTC</button>
+            </div>
+            
+            <div class="qr-image" id="qrDisplay">
+                <!-- QR will be loaded here -->
+            </div>
+            
+            <div class="payment-details">
+                <div class="amount" id="amountDisplay">500.00</div>
+                <div class="currency" id="currencyDisplay">THB</div>
+            </div>
+            
+            <div class="timer" id="timerDisplay">
+                ⏱️ This QR expires in: <span id="countdown">05:00</span>
+            </div>
+            
+            <div class="scan-instruction">
+                📱 Using PromptPay app?<br>
+                Open your banking app and scan the QR code above.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentMethod = 'promptpay';
+        let countdownInterval;
+        let timeLeft = 300; // 5 minutes
+        
+        function switchMethod(method) {
+            currentMethod = method;
+            
+            // Update active button
+            document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update display
+            updateQR();
+        }
+        
+        function updateQR() {
+            const qrDisplay = document.getElementById('qrDisplay');
+            const amountDisplay = document.getElementById('amountDisplay');
+            const currencyDisplay = document.getElementById('currencyDisplay');
+            
+            // Simulate QR generation (in real app, call backend API)
+            if (currentMethod === 'promptpay') {
+                amountDisplay.textContent = '500.00';
+                currencyDisplay.textContent = 'THB';
+                qrDisplay.innerHTML = '<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#333;">🔲 PromptPay QR</div>';
+} else if (currentMethod === 'usdt') {
+                amountDisplay.textContent = '15.00';
+                currencyDisplay.textContent = 'USDT (TRC-20)';
+                qrDisplay.innerHTML = '<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#26a17b;">🪙 USDT QR</div>';
+            } else if (currentMethod === 'btc') {
+                amountDisplay.textContent = '0.0005';
+                currencyDisplay.textContent = 'BTC';
+                qrDisplay.innerHTML = '<div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#f7931a;">₿ BTC QR</div>';
+            }
+            
+            // Reset timer
+            timeLeft = 300;
+            updateTimer();
+        }
+        
+        function updateTimer() {
+            const countdown = document.getElementById('countdown');
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdown.textContent = ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                clearInterval(countdownInterval);
+                countdown.textContent = 'EXPIRED';
+                document.getElementById('qrDisplay').innerHTML = '<div style="color:red;">❌ QR Expired</div>';
+            }
+        }
+        
+        // Start countdown
+        countdownInterval = setInterval(updateTimer, 1000);
+        
+        // Initial load
+        updateQR();
+    </script>
+</body>
+</html>
+```
